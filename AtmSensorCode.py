@@ -8,7 +8,6 @@ import sys
 
 
 def runExample():
-    print("\nSparkFun BME280 Sensor  Example 5\n")
     mySensor = qwiic_bme280.QwiicBme280()
 
     if not mySensor.connected:
@@ -29,7 +28,6 @@ def runExample():
         for column in range(0, 16):
             tempReadData = mySensor._i2c.readByte(mySensor.address, memCounter)
             print("0x%.2x " % tempReadData, end='')
-
             memCounter += 1
         print("")
 

@@ -29,7 +29,7 @@ if __name__ == '__main__':
     while True:
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
-            linep = str(line)                                           #scaling the input in
+            linep = str(line)                                           #scaling the input in for final cloud send
             print(linep)
             dateArd1 = str(datetime.datetime.now())
             print(dateArd1)
