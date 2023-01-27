@@ -1,14 +1,20 @@
 import serial
 import datetime
 from multiprocessing import Process
+import pyMultiSerial as p
 
 dateTime = str(datetime.datetime.now())
 id1 = '/dev/ttyUSB0'
 id2 = '/dev/ttyUSB1'
 sensor1 = 18
 sensor2 = 16
+ms = p.MultiSerial()
+ms.baudrate = 9600
+ms.timeout = 2
 
 if __name__ == '__main__':
+    ms.Start()
+
     while True:
         number = serial.read()
         if number != b'':
@@ -25,15 +31,15 @@ if __name__ == '__main__':
             else:
                 print("No Identification Number Found")
 
-    ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
-    ser.reset_input_buffer()
-    while True:
-        if ser.in_waiting > 0:
-            line = ser.readline().decode('utf-8').rstrip()
-            lineScaled = str(line)  # scaling the input in
-            print(lineScaled)
-            print(dateTime)
-            exit()
+    # ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
+    # ser.reset_input_buffer()
+    # while True:
+    #     if ser.in_waiting > 0:
+    #         line = ser.readline().decode('utf-8').rstrip()
+    #         lineScaled = str(line)  # scaling the input in
+    #         print(lineScaled)
+    #         print(dateTime)
+    #         exit()
 
 
 def ard1():
