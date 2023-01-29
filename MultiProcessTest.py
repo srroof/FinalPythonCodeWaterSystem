@@ -1,5 +1,6 @@
 import pyMultiSerial as p
 import serial
+import dateTime
 
 # Create object of class pyMultiSerial
 ms = p.MultiSerial()
@@ -24,15 +25,7 @@ ms.port_connection_found_callback = port_connection_found_callback
 # Callback on receiving port data
 # Parameters: Port Number, Serial Port Object, Text read from port
 def port_read_callback(portno, serial, text):
-    if text != '':
-        lineInt = int(text)
-        sensor1scaled = str(lineInt / 5)  # print into window to check variables and or send
-        print("Amount of water being detected:")
-        print(int(sensor1scaled))
-        with open('WaterPressure.txt', 'w') as f:
-            f.write(dateTime)  # write to text file
-            f.write(lineScaled + "\n")
-        print("Received: '" + sensor1scaled + "' at: '" + dateTime + "' from port: " + portno)
+    print("Received: " + text + " at: " + datetime() + " from port: " + portno)
     pass
 
 
