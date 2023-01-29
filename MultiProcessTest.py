@@ -1,9 +1,60 @@
-from multiprocessing import Process
+import pyMultiSerial as p
+import serial
 
-def f(name):
-    print('hello', name)
+# Create object of class pyMultiSerial
+ms = p.MultiSerial()
+ms.baudrate = 9600
+ms.timeout = 2
 
-if __name__ == '__main__':
-    p = Process(target=f, args=('bob',))
-    p.start()
-    p.join()
+
+# Add Callbacks
+# Callback functions provide you an interface to perform an action at certain event.
+# Callback function on detecting a port connection.
+# Parameters: Port Number, Serial Port Object
+# Return: True if the port is to be accepted, false if the port is to be rejected based on some condition
+
+def port_connection_found_callback(portno, serial):
+    print("Port Found: " + portno)
+
+
+# register callback function
+ms.port_connection_found_callback = port_connection_found_callback
+
+
+# Callback on receiving port data
+# Parameters: Port Number, Serial Port Object, Text read from port
+def port_read_callback(portno, serial, text):
+    line = text.readline().decode('utf-8').rstrip()
+    if line != '':
+        lineInt = int(line)
+        sensor1scaled = str(lineInt / 5)  # print into window to check variables and or send
+        print("Amount of water being detected:")
+        print(int(sensor1scaled))
+        with open('WaterPressure.txt', 'w') as f:
+            f.write(dateTime)  # write to text file
+            f.write(lineScaled + "\n")
+        print("Received: '" + sensor1scaled + "' at: '" + dateTime + "' from port: " + portno)
+    pass
+
+
+# register callback function
+ms.port_read_callback = port_read_callback
+
+
+# Callback on port disconnection. Triggered when a device is disconnected from port.
+# Parameters: Port No
+def port_disconnection_callback(portno):
+    print("Port " + portno + " disconnected")
+
+
+# register callback function
+ms.port_disconnection_callback = port_disconnection_callback
+
+# Start Monitoring ports
+ms.Start()
+
+# To stop monitoring, press Ctrl+C in the console or command line.
+
+
+# Caution: Any code written below ms.Start() will be executed only after monitoring is stopped.
+# Make use of callback functions to execute your code.
