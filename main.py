@@ -66,7 +66,7 @@ def ard2():  # for groundwater content monitoring / other sensors
         sensor2scaled = str(lineInt / 2)  # print into window to check variables and or send
         print("Ground water being detected:")
         print(int(sensor2scaled))
-        with open('GroundWater.txt', 'w') as f:
+        with open('GroundWater.txt', 'a') as f:
             f.write(dateTime)  # write to text file
             f.write(lineScaled + "\n")
         ard1()

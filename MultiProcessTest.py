@@ -1,6 +1,6 @@
 import pyMultiSerial as p
 import serial
-import dateTime
+import datetime
 
 # Create object of class pyMultiSerial
 ms = p.MultiSerial()
@@ -25,7 +25,11 @@ ms.port_connection_found_callback = port_connection_found_callback
 # Callback on receiving port data
 # Parameters: Port Number, Serial Port Object, Text read from port
 def port_read_callback(portno, serial, text):
-    print("Received: " + text + " at: " + datetime() + " from port: " + portno)
+    date = str(datetime.datetime.now())
+    print("Received: " + text + " at: " + date + " from port: " + portno)
+    with open('GroundWater.txt', '+a') as f:
+        f.write(dateTime)  # write to text file
+        f.write(lineScaled + "\n")
     pass
 
 
