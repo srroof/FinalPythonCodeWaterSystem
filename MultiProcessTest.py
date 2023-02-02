@@ -1,6 +1,7 @@
 import pyMultiSerial as p
 import serial
 import datetime
+import requests
 
 # Create object of class pyMultiSerial
 ms = p.MultiSerial()
@@ -26,11 +27,32 @@ ms.port_connection_found_callback = port_connection_found_callback
 # Parameters: Port Number, Serial Port Object, Text read from port
 def port_read_callback(portno, serial, text):
     date = str(datetime.datetime.now())
-    print("Received: " + text + " at: " + date + " from port: " + portno)
+    print(text + " at: " + date + " from port: " + portno)
     with open('GroundWater.txt', '+a') as f:
         f.write(dateTime)  # write to text file
-        f.write(lineScaled + "\n")
+        f.write(text + "\n")
+    dataList = [GMC1, GMC2, Pressure1, Pressure2]
+    x = f.read(20)
+    if x == "GMC1":
+        dataList[0] = f.readline()
+    if x == "GMC2":
+        dataList[1] = f.readline()
+    if x == "Pressure1":
+        dataList[2] = f.readline()
+    if x == "Pressure2":
+        dataList[3] = f.readline()
     pass
+
+
+def send_emoncms(dataList):
+
+    r = requests.post('http://172.31.171.113/input/post?node=emontx&fulljson=', json={
+        "GMC1": dataList[0],
+        "GMC2": dataList[1],
+        "Pressure 1": dataList[2],
+        "Pressure 2": dataList[3]
+    })
+    print(f"Status Code: {r.status_code}, Response: {r.json()}")
 
 
 # register callback function

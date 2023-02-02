@@ -17,3 +17,4 @@ if __name__ == '__main__':
             # http: // 192.168.42.1 / input / post?node = emontx & fulljson = {"power1": 100, "power2": 200, "power3": 300,"time": "2021-07-21T16%3A08%3A14%2B01%3A00"}
 
 
+http://172.31.171.113/input/post?node=emontx&fulljson={%22power1%22:100,%22power2%22:200,%22power3%22:300,%22time%22:%222023-02-01T09%3A27%3A48-05%3A00%22}
