@@ -1,6 +1,10 @@
+from __future__ import print_function
 import pyMultiSerial as p
 import serial
+import qwiic_bme280
+import sys
 import datetime
+import time
 import requests
 
 # Create object of class pyMultiSerial
@@ -26,33 +30,52 @@ ms.port_connection_found_callback = port_connection_found_callback
 # Callback on receiving port data
 # Parameters: Port Number, Serial Port Object, Text read from port
 def port_read_callback(portno, serial, text):
+    mySensor = qwiic_bme280.QwiicBme280()
     date = str(datetime.datetime.now())
     print(text + " at: " + date + " from port: " + portno)
+    time.sleep(2)
+    if not mySensor.connected:
+        print("The Qwiic BME280 device isn't connected to the system. Please check your connection", file=sys.stderr)
+        return
+
+    mySensor.begin()
+    print("Humidity:\t%.3f" % mySensor.humidity)
+    print("Pressure:\t%.3f" % mySensor.pressure)
+    print("Temperature:\t%.2f" % mySensor.temperature_fahrenheit)
+    time.sleep(2)
+
     with open('GroundWater.txt', '+a') as f:
-        f.write(dateTime)  # write to text file
+        f.write(date)
+        f.write("Humidity:\t%.3f" % mySensor.humidity + "\n")
+        f.write("Pressure:\t%.3f" % mySensor.pressure + "\n")
+        f.write("Temperature:\t%.2f" % mySensor.temperature_fahrenheit + "\n")
+        f.write("\n")
+    with open('GroundWater.txt', '+a') as f:
+        f.write(date)  # write to text file
         f.write(text + "\n")
-    dataList = [GMC1, GMC2, Pressure1, Pressure2]
-    x = f.read(20)
-    if x == "GMC1":
-        dataList[0] = f.readline()
-    if x == "GMC2":
-        dataList[1] = f.readline()
-    if x == "Pressure1":
-        dataList[2] = f.readline()
-    if x == "Pressure2":
-        dataList[3] = f.readline()
-    pass
+
+    # dataList = [GMC1, GMC2, Pressure1, Pressure2]
+    # x = f.read(80)
+    # if x == "GMC1":
+    #     dataList[0] = f.readline()
+    # if x == "GMC2":
+    #     dataList[1] = f.readline()
+    # if x == "Pressure1":
+    #     dataList[2] = f.readline()
+    # if x == "Pressure2":
+    #     dataList[3] = f.readline()
+    # pass
 
 
-def send_emoncms(dataList):
-
-    r = requests.post('http://172.31.171.113/input/post?node=emontx&fulljson=', json={
-        "GMC1": dataList[0],
-        "GMC2": dataList[1],
-        "Pressure 1": dataList[2],
-        "Pressure 2": dataList[3]
-    })
-    print(f"Status Code: {r.status_code}, Response: {r.json()}")
+# def send_emoncms(dataList):
+#
+#     r = requests.post('http://172.31.171.113/input/post?node=emontx&fulljson=', json={
+#         "GMC1": dataList[0],
+#         "GMC2": dataList[1],
+#         "Pressure 1": dataList[2],
+#         "Pressure 2": dataList[3]
+#     })
+#     print(f"Status Code: {r.status_code}, Response: {r.json()}")
 
 
 # register callback function
@@ -71,8 +94,3 @@ ms.port_disconnection_callback = port_disconnection_callback
 # Start Monitoring ports
 ms.Start()
 
-# To stop monitoring, press Ctrl+C in the console or command line.
-
-
-# Caution: Any code written below ms.Start() will be executed only after monitoring is stopped.
-# Make use of callback functions to execute your code.
