@@ -10,7 +10,7 @@ import requests
 
 # Create object of class pyMultiSerial
 ms = p.MultiSerial()
-ms.baudrate = 9600
+ms.baudrate = 9600  # open serial port at 9600 to match arduinos
 ms.timeout = 2
 date = str(datetime.datetime.now())
 
@@ -40,8 +40,12 @@ def port_read_callback(portno, serial, text):
         f.write(date)  # write to text file
         f.write(text + "\n")
 
+    breakout_sensor()  # calls for function breakout sensor
+    emon_send(gmc1, gmc2, pressure1, pressure2)  # calls for function breakout sensor while sending the data in as args
+
     # here im going to parse the text data coming in and turn it into ints then scale as necessary. Some data
     # is already scaled in the Arduinos such as percentages because it's not a lot of load for the arduino
+
 
 # register callback function
 ms.port_read_callback = port_read_callback
@@ -58,16 +62,16 @@ def breakout_sensor():
     mySensor.begin()  # start atm breakout sensor
     if mySensor.connected:
         humidity = ("Humidity:\t%.3f" % mySensor.humidity)  # find humidity
-        atmPressure = ("Pressure:\t%.3f" % mySensor.pressure)  # find atmospheric pressure
+        atm_pressure = ("Pressure:\t%.3f" % mySensor.pressure)  # find atmospheric pressure
         temperature = ("Temperature:\t%.2f" % mySensor.temperature_fahrenheit)  # find temperature
         time.sleep(2)  # force slowdown so pi isn't overloaded
         with open('atmBreakout.txt', '+a') as f:  # write text to file with append
             f.write(date)
             f.write(humidity + "\n")
-            f.write(atmPressure + "\n")
+            f.write(atm_pressure + "\n")
             f.write(temperature + "\n")
             f.write("\n")
-
+        return
     if not mySensor.connected:
         print("The Qwiic BME280 device isn't connected to the system. Please check your connection",
               file=sys.stderr)
@@ -75,16 +79,23 @@ def breakout_sensor():
 
 
 # send data to emoncms using data put into dictionary (key-value pairs)
-def emon_send():
-    # thisdict = {GMC1, GMC2, Pressure1, Pressure2}
-    # x = f.read(10)
-    # if
-    #
-    # # Finalized readings to send to emon
-    # Moisture1 = 77
-    # GPM1 = 211
-    # Temperature1 = temperature
-    # Rotation1_RPM = 0.3
+def emon_send(gmc1, gmc2, pressure1, pressure2, humidity, atm_pressure, temperature):
+    thisdict = {
+        "ground moisture 1": gmc1,
+        "ground moisture 2": gmc2,
+        "Water Pressure 1": pressure1,
+        "Water Pressure 2": pressure2,
+        "Humidity": humidity,
+        "Atmospheric Pressure": atm_pressure
+    }
+    x = f.read(10)
+
+
+    # Finalized readings to send to emon
+    Moisture1 = 77
+    GPM1 = 211
+    Temperature1 = temperature
+    Rotation1_RPM = 0.3
 
     # publish multiple messages - this is a Python list of dict elements!
     # topic parts: "emon" is required; "Sprinkler1" is a Node-name; "Moisture1" "GPM1", etc are data labels
@@ -96,6 +107,8 @@ def emon_send():
     # Publish them via MQTT using the multiple method
     # Do not need to specify a host since publishing internally
     publish.multiple(msg, auth={'username': "emonpi", 'password': "emonpimqtt2016"})
+
+    return
 
 
 # register callback function
