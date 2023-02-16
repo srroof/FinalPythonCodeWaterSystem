@@ -52,9 +52,10 @@ void loop()
 
 
 
-
-// Pressure Sensor Code
-
+//Arduino Pressure Sensor Code
+/*
+  Collect data from sensors and send data while being mapped
+*/
 int pressRead = 0;
 int otherRead = 0;
 int sensorMin = 1023;        // minimum sensor value
@@ -100,8 +101,10 @@ void loop()
   float press2Read = analogRead(A1);
   float scaledPress1Read = ((((press1Read / 1023) * 100) / 300) * 100);
   float scaledPress2Read = ((((press2Read / 1023) * 100) / 300) * 100);
-  String readingOne = String(scaledPress1Read);
-  String readingTwo = String(scaledPress2Read);
+  int exchange1 = int(scaledPress1Read);
+  int exchange2 = int(scaledPress2Read);
+  String readingOne = String("Pre1" + String(exchange1));
+  String readingTwo = String("Pre2" + String(exchange2));
   delay(5000);
   Serial.println("Pressure One: " + readingOne + "  Pressure Two: " + readingTwo);
 }
