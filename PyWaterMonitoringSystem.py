@@ -31,8 +31,7 @@ ms.port_connection_found_callback = port_connection_found_callback
 # Callback on receiving port data
 # Parameters: Port Number, Serial Port Object, Text read from port
 def port_read_callback(portno, serial, text):
-    global gmc1, gmc2, pre1, pre2
-    # print(text)  # pull text from the port and print it
+    print(text)  # pull text from the port and print it for debugging purposes
     time.sleep(2)  # force slowdown so pi doesn't get backed up and crash
 
     with open('GroundWater.txt', '+a') as f:  # write data to file GroundWater.txt stored on the pi
@@ -55,12 +54,11 @@ def port_read_callback(portno, serial, text):
             pre1 = readline[4: 10]
         if read == "pre2":
             pre2 = readline[4: 10]
-        else:   # if no data found then return out and look for more
+        else:  # if no data found then return out and look for more
             print("No data was found. looking for more")
-            time.sleep(2)  # force slowdown so pi doesn't get backed up and crash
-            return
 
     breakout_sensor()  # calls for function breakout sensor
+
     # calls for function breakout sensor while sending the data in as args
     emon_send(gmc1, gmc2, pre1, pre2, humidity, atm_pressure, temperature)
 
@@ -87,6 +85,7 @@ def breakout_sensor():
         atm_pressure = ("Pressure:\t%.3f" % mySensor.pressure)  # find atmospheric pressure
         temperature = ("Temperature:\t%.2f" % mySensor.temperature_fahrenheit)  # find temperature
         time.sleep(2)  # force slowdown so pi doesn't get backed up and crash
+        print(humidity, atm_pressure, temperature)  # print for debugging purpose
         with open('atmBreakout.txt', '+a') as f:  # write text to file with append
             f.write(date)
             f.write(humidity + "\n")
@@ -112,7 +111,7 @@ def emon_send(gmc1, gmc2, pre1, pre2, humidity, atm_pressure, temperature):
     }
     print(thisdict)
 
-    # Finalized readings to send to emon
+    # Finalized readings to send to Emon
     moisture1 = gmc1
     moisture2 = gmc2
     pressure1 = pre1
