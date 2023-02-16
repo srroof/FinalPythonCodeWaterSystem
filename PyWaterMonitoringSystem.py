@@ -58,7 +58,8 @@ def port_read_callback(portno, serial, text):
             return
 
     breakout_sensor()  # calls for function breakout sensor
-    emon_send(gmc1, gmc2, pre1, pre2)  # calls for function breakout sensor while sending the data in as args
+    # calls for function breakout sensor while sending the data in as args
+    emon_send(gmc1, gmc2, pre1, pre2, humidity, atm_pressure, temperature)
 
 
 # register callback function
@@ -83,7 +84,6 @@ def breakout_sensor():
         atm_pressure = ("Pressure:\t%.3f" % mySensor.pressure)  # find atmospheric pressure
         temperature = ("Temperature:\t%.2f" % mySensor.temperature_fahrenheit)  # find temperature
         time.sleep(2)  # force slowdown so pi doesn't get backed up and crash
-        emon_send(humidity, atm_pressure, temperature)  # send data to the Emon send function
         with open('atmBreakout.txt', '+a') as f:  # write text to file with append
             f.write(date)
             f.write(humidity + "\n")
