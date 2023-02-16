@@ -43,18 +43,21 @@ def port_read_callback(portno, serial, text):
     # is already scaled in the Arduino's such as percentages because it's not a lot of load for the arduino
     with open('portread.txt', '+w') as r:  # Open new file to store data only for each call back in order to read
         r.write(text + "\n")        # writing data to file without appending
-        read = r.read[0: 4]     # read the first 4 characters of the file to get the pointer to the data
+        readline = r.readline()
+        read = readline[0: 4]     # read the first 4 characters of the file to get the pointer to the data
 
         # using the pointer set the correct data set to the data following the pointer
-        if read == gmc1:
+        if read == "gmc1":
             gmc1 = readline[4: 10]
-        if read == gmc2:
+        if read == "gmc2":
             gmc2 = readline[4: 10]
-        if read == pre1:
+        if read == "pre1":
             pre1 = readline[4: 10]
-        if read == pre2:
+        if read == "pre2":
             pre2 = readline[4: 10]
         else:   # if no data found then return out and look for more
+            print("No data was found. looking for more")
+            time.sleep(2)  # force slowdown so pi doesn't get backed up and crash
             return
 
     breakout_sensor()  # calls for function breakout sensor
