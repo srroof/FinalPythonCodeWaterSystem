@@ -100,7 +100,7 @@ def breakout_sensor():
         return
 
 
-# send data to emoncms using data put into dictionary (key-value pairs)
+# send data to Emoncms using data put into dictionary (key-value pairs)
 def emon_send(gmc1, gmc2, pre1, pre2, humidity, atm_pressure, temperature):
     thisdict = {
         "ground moisture 1": gmc1,
@@ -113,14 +113,20 @@ def emon_send(gmc1, gmc2, pre1, pre2, humidity, atm_pressure, temperature):
     print(thisdict)
 
     # Finalized readings to send to emon
-    Moisture1 = 77
+    moisture1 = gmc1
+    moisture2 = gmc2
+    pressure1 = pre1
+    pressure2 = pre2
     GPM1 = 211
     Temperature1 = temperature
     Rotation1_RPM = 0.3
 
     # publish multiple messages - this is a Python list of dict elements!
     # topic parts: "emon" is required; "Sprinkler1" is a Node-name; "Moisture1" "GPM1", etc. are data labels
-    msg = [{'topic': "emon/Sprinkler1/Moisture1", 'payload': Moisture1},
+    msg = [{'topic': "emon/Sprinkler1/Moisture1", 'payload': moisture1},
+           {'topic': "emon/Sprinkler1/Moisture2", 'payload': moisture2oisture2},
+           {'topic': "emon/Sprinkler1/Pressure1", 'payload': pressure1},
+           {'topic': "emon/Sprinkler1/Pressure2", 'payload': pressure2},
            {'topic': "emon/Sprinkler1/GPM1", 'payload': GPM1},
            {'topic': "emon/Sprinkler1/Temperature1", 'payload': Temperature1},
            {'topic': "emon/Sprinkler1/Rotation1_RPM", 'payload': Rotation1_RPM}]
