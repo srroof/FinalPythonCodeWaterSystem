@@ -1,5 +1,6 @@
 from __future__ import print_function
 import paho.mqtt.publish as publish
+# Create object of class pyMultiSerial
 import pyMultiSerial as p
 import serial
 import qwiic_bme280
@@ -8,15 +9,13 @@ import datetime
 import time
 import requests
 
-# Create object of class pyMultiSerial
+
 ms = p.MultiSerial()
-ms.baudrate = 9600  # open serial port at 9600 to match arduinos
-ms.timeout = 2
+ms.baudrate = 9600  # open serial port at 9600 to match Arduino's
+ms.timeout = 2  # time it will take to retrieve data from the ports that are open
 date = str(datetime.datetime.now())
 
 
-# Add Callbacks
-# Callback functions provide you an interface to perform an action at certain event.
 # Callback function on detecting a port connection.
 # Parameters: Port Number, Serial Port Object
 # Return: True if the port is to be accepted, false if the port is to be rejected based on some condition within library
@@ -41,9 +40,13 @@ def port_read_callback(portno, serial, text):
         f.write(date)  # write to text file
         f.write(text + "\n")
 
-    with open('portread.txt', '+w') as r:
-        r.write(text + "\n")
-        read = r.read[0: 4]
+    # here im going to parse the text data coming in and turn it into ints then scale as necessary. Some data
+    # is already scaled in the Arduino's such as percentages because it's not a lot of load for the arduino
+    with open('portread.txt', '+w') as r:  # Open new file to store data only for each call back in order to read
+        r.write(text + "\n")        # writing data to file without appending
+        read = r.read[0: 4]     # read the first 4 characters of the file to get the pointer to the data
+
+        # using the pointer set the correct data set to the data following the pointer
         if read == gmc1:
             gmc1 = readline[4: 10]
         if read == gmc2:
@@ -52,14 +55,11 @@ def port_read_callback(portno, serial, text):
             pre1 = readline[4: 10]
         if read == pre2:
             pre2 = readline[4: 10]
-        else:
+        else:   # if no data found then return out and look for more
             return
 
     breakout_sensor()  # calls for function breakout sensor
     emon_send(gmc1, gmc2, pre1, pre2)  # calls for function breakout sensor while sending the data in as args
-
-    # here im going to parse the text data coming in and turn it into ints then scale as necessary. Some data
-    # is already scaled in the Arduino's such as percentages because it's not a lot of load for the arduino
 
 
 # register callback function
@@ -76,9 +76,6 @@ def port_disconnection_callback(portno):
 ms.port_disconnection_callback = port_disconnection_callback
 
 
-# Caution: Any code written below ms.Start() will be executed only after monitoring is stopped.
-# Make use of callback functions to execute your code.
-
 def breakout_sensor():
     mySensor = qwiic_bme280.QwiicBme280()
     mySensor.begin()  # start atm breakout sensor
@@ -87,6 +84,7 @@ def breakout_sensor():
         atm_pressure = ("Pressure:\t%.3f" % mySensor.pressure)  # find atmospheric pressure
         temperature = ("Temperature:\t%.2f" % mySensor.temperature_fahrenheit)  # find temperature
         time.sleep(2)  # force slowdown so pi doesn't get backed up and crash
+        emon_send(humidity, atm_pressure, temperature)  # send data to the Emon send function
         with open('atmBreakout.txt', '+a') as f:  # write text to file with append
             f.write(date)
             f.write(humidity + "\n")
@@ -134,3 +132,5 @@ def emon_send(gmc1, gmc2, pre1, pre2, humidity, atm_pressure, temperature):
 
 # Start Monitoring ports
 ms.Start()
+
+# Any code written below ms.Start() will be executed only after monitoring is stopped.
