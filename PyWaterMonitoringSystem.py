@@ -124,7 +124,7 @@ def emon_send(gmc1, gmc2, pre1, pre2, humidity, atm_pressure, temperature):
     # publish multiple messages - this is a Python list of dict elements!
     # topic parts: "emon" is required; "Sprinkler1" is a Node-name; "Moisture1" "GPM1", etc. are data labels
     msg = [{'topic': "emon/Sprinkler1/Moisture1", 'payload': moisture1},
-           {'topic': "emon/Sprinkler1/Moisture2", 'payload': moisture2oisture2},
+           {'topic': "emon/Sprinkler1/Moisture2", 'payload': moisture2},
            {'topic': "emon/Sprinkler1/Pressure1", 'payload': pressure1},
            {'topic': "emon/Sprinkler1/Pressure2", 'payload': pressure2},
            {'topic': "emon/Sprinkler1/GPM1", 'payload': GPM1},
