@@ -1,7 +1,6 @@
 from __future__ import print_function
 import paho.mqtt.publish as publish
-# Create object of class pyMultiSerial
-import pyMultiSerial as p
+import pyMultiSerial as p   # Create object of class pyMultiSerial
 import serial
 import qwiic_bme280
 import sys
@@ -108,7 +107,6 @@ def emon_send(gmc1, gmc2, pre1, pre2, humidity, atm_pressure, temperature):
         "Humidity": humidity,
         "Atmospheric Pressure": atm_pressure
     }
-
     print(thisdict)
 
     # Finalized readings to send to emon
