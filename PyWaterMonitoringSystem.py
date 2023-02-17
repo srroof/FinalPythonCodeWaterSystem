@@ -1,4 +1,4 @@
-from __future__ import print_function
+from __future__ import print_function  **What is this? Doesn't seem to be used
 import paho.mqtt.publish as publish
 import pyMultiSerial as p   # Create object of class pyMultiSerial
 import serial
@@ -6,7 +6,7 @@ import qwiic_bme280
 import sys
 import datetime
 import time
-import requests
+import requests    **Not needed if you use mqtt
 
 
 ms = p.MultiSerial()
@@ -40,7 +40,7 @@ def port_read_callback(portno, serial, text):
 
     # here im going to parse the text data coming in and turn it into ints then scale as necessary. Some data
     # is already scaled in the Arduino's such as percentages because it's not a lot of load for the arduino
-    with open('portread.txt', '+w') as r:  # Open new file to store data only for each call back in order to read
+    with open('portread.txt', '+w') as r:  # Open new file to store data only for each call back in order to read   **Why do you need to write 'text' to disk?
         r.write(text + "\n")        # writing data to file without appending
         readline = r.readline()
         read = readline[0: 4]     # read the first 4 characters of the file to get the pointer to the data
@@ -57,10 +57,10 @@ def port_read_callback(portno, serial, text):
         else:  # if no data found then return out and look for more
             print("No data was found. looking for more")
 
-    breakout_sensor()  # calls for function breakout sensor
+    breakout_sensor()  # calls for function breakout sensor  ** This will get called every time an Arduino sends data. Would it make more sense to call this on a time interval? But maybe you can't once ms.Start() is called?
 
     # calls for function breakout sensor while sending the data in as args
-    emon_send(gmc1, gmc2, pre1, pre2, humidity, atm_pressure, temperature)
+    emon_send(gmc1, gmc2, pre1, pre2, humidity, atm_pressure, temperature)   **I think your group of 'if' statements above will only define one of gmc1, gmc2, etc. The others will be undefined and thus cause a problem here 
 
 
 # register callback function
@@ -81,7 +81,7 @@ def breakout_sensor():
     mySensor = qwiic_bme280.QwiicBme280()
     mySensor.begin()  # start atm breakout sensor
     if mySensor.connected:
-        humidity = ("Humidity:\t%.3f" % mySensor.humidity)  # find humidity
+        humidity = ("Humidity:\t%.3f" % mySensor.humidity)  # find humidity  **I think that 'humidity', 'atm_pressure', etc are local variables only valid inside this function. You need to define them as global - see https://www.w3schools.com/python/python_variables_global.asp
         atm_pressure = ("Pressure:\t%.3f" % mySensor.pressure)  # find atmospheric pressure
         temperature = ("Temperature:\t%.2f" % mySensor.temperature_fahrenheit)  # find temperature
         time.sleep(2)  # force slowdown so pi doesn't get backed up and crash
